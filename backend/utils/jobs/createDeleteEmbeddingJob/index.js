@@ -5,7 +5,7 @@ async function createDeleteEmbeddingJob(
   workspace,
   organization,
   connector,
-  user
+  user,
 ) {
   const taskName = `${connector.type}/deleteFragment`;
   const jobData = { documentVector, workspace, organization, connector };
@@ -13,7 +13,7 @@ async function createDeleteEmbeddingJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

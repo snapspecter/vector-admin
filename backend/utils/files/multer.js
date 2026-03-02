@@ -7,7 +7,7 @@ function setupMulter() {
       const path = require("path");
       const uploadOutput = path.resolve(
         __dirname,
-        `../../../document-processor/hotdir`
+        `../../../document-processor/hotdir`,
       );
       cb(null, uploadOutput);
     },
@@ -20,7 +20,7 @@ function setupMulter() {
     fileFilter: function (req, file, callback) {
       // Solve the problem of garbled Chinese names
       file.originalname = Buffer.from(file.originalname, "latin1").toString(
-        "utf8"
+        "utf8",
       );
       callback(null, true);
     },

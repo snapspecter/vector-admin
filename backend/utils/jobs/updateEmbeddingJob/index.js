@@ -7,7 +7,7 @@ async function updateEmbeddingJob(
   workspace,
   connector,
   user,
-  newText
+  newText,
 ) {
   const taskName = `${connector.type}/updateFragment`;
   const jobData = {
@@ -22,7 +22,7 @@ async function updateEmbeddingJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

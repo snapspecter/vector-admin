@@ -4,7 +4,7 @@ async function createWorkspaceSyncJob(
   organization,
   workspace,
   connector,
-  user
+  user,
 ) {
   const taskName = `${connector.type}/sync-workspace`;
   const hasPendingJob = await Queue.get({
@@ -19,7 +19,7 @@ async function createWorkspaceSyncJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

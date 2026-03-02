@@ -60,7 +60,7 @@ async function workspaceSimilaritySearch(user, request, response) {
   const searchResults = await vectorDb.similarityResponse(
     workspace.fname,
     queryVector,
-    topK
+    topK,
   );
   const results = searchResults.vectorIds.map((_, i) => {
     return {

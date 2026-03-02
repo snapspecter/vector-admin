@@ -30,7 +30,7 @@ function authenticationEndpoints(app) {
         user: onboardingUser,
         token: makeJWT(
           { id: onboardingUser.id, email: onboardingUser.email },
-          "1hr"
+          "1hr",
         ),
         message: null,
       });
@@ -93,7 +93,7 @@ function authenticationEndpoints(app) {
         user: existingUser,
         token: makeJWT(
           { id: existingUser.id, email: existingUser.email },
-          "30d"
+          "30d",
         ),
         message: null,
       });

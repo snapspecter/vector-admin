@@ -7,7 +7,7 @@ const OrganizationConnection = {
   create: async function (
     organizationId = 0,
     connectionType = "",
-    connectionSettings = {}
+    connectionSettings = {},
   ) {
     try {
       if (!this.supportedConnectors.includes(connectionType))
@@ -74,7 +74,7 @@ const OrganizationConnection = {
     try {
       if (!id) throw new Error("No connector id provided for update");
       const validKeys = Object.keys(data).filter((key) =>
-        this.writable.includes(key)
+        this.writable.includes(key),
       );
       const values = Object.values(data);
       if (validKeys.length === 0 || validKeys.length !== values.length)

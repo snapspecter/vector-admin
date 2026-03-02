@@ -56,7 +56,7 @@ class Weaviate {
 
     return Number(
       response?.data?.Get?.[this.camelCase(namespace)]?.[0]?._additional?.vector
-        ?.length || 0
+        ?.length || 0,
     );
   }
 
@@ -222,7 +222,7 @@ class Weaviate {
             .withId(vectorId)
             .do();
           resolve(`Deleted ${vectorId} from ${className}`);
-        })
+        }),
       );
     }
 
@@ -355,7 +355,7 @@ class Weaviate {
         }
       } else {
         console.error(
-          "Could not use OpenAI to embed document chunk! This document will not be recorded."
+          "Could not use OpenAI to embed document chunk! This document will not be recorded.",
         );
       }
 
@@ -369,7 +369,7 @@ class Weaviate {
       await DocumentVectors.createMany(documentVectors);
       await storeVectorResult(
         cacheInfo,
-        WorkspaceDocument.vectorFilename(dbDocument)
+        WorkspaceDocument.vectorFilename(dbDocument),
       );
       return { success: true, message: null };
     } catch (e) {
@@ -389,7 +389,7 @@ class Weaviate {
     };
     const fieldsForCollection = await this.fieldNamesForCollection(namespace);
     const queryString = `${fieldsForCollection.join(
-      " "
+      " ",
     )} _additional { id certainty }`;
     const queryResponse = await client.graphql
       .get()

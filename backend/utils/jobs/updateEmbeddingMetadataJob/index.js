@@ -7,7 +7,7 @@ async function updateEmbeddingMetadataJob(
   workspace,
   connector,
   user,
-  newMetadata
+  newMetadata,
 ) {
   const taskName = `${connector.type}/updateFragmentMetadata`;
   const jobData = {
@@ -22,7 +22,7 @@ async function updateEmbeddingMetadataJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

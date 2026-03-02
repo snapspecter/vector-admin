@@ -74,7 +74,7 @@ class Chroma {
     const isAlive = await client.heartbeat();
     if (!isAlive)
       throw new Error(
-        "ChromaDB::Invalid Heartbeat received - is the instance online?"
+        "ChromaDB::Invalid Heartbeat received - is the instance online?",
       );
     return { client };
   }
@@ -160,7 +160,7 @@ class Chroma {
           offset: offset,
           include: ["embeddings", "documents", "metadatas"],
         }),
-      }
+      },
     )
       .then((res) => res.json())
       .then((res) => res)
@@ -176,7 +176,7 @@ class Chroma {
     collectionName,
     documentData,
     embedderApiKey,
-    dbDocument
+    dbDocument,
   ) {
     try {
       const openai = new OpenAi(embedderApiKey);
@@ -231,7 +231,7 @@ class Chroma {
         }
       } else {
         console.error(
-          "Could not use OpenAI to embed document chunk! This document will not be recorded."
+          "Could not use OpenAI to embed document chunk! This document will not be recorded.",
         );
       }
 
@@ -252,7 +252,7 @@ class Chroma {
       await DocumentVectors.createMany(documentVectors);
       await storeVectorResult(
         cacheInfo,
-        WorkspaceDocument.vectorFilename(dbDocument)
+        WorkspaceDocument.vectorFilename(dbDocument),
       );
       return { success: true, message: null };
     } catch (e) {

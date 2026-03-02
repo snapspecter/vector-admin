@@ -41,7 +41,7 @@ const DocumentVectors = {
     clause = {},
     limit = null,
     offset = null,
-    orderBy = null
+    orderBy = null,
   ) {
     try {
       const vectors = await prisma.document_vectors.findMany({

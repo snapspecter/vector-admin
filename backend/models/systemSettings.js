@@ -35,7 +35,7 @@ const SystemSettings = {
 
   updateSettings: async function (updates = {}) {
     const validConfigKeys = Object.keys(updates).filter((key) =>
-      this.supportedFields.includes(key)
+      this.supportedFields.includes(key),
     );
 
     for (const key of validConfigKeys) {

@@ -28,7 +28,7 @@ async function deleteVectorCacheFile(digestFilename = null) {
   try {
     const filepath = path.resolve(
       __dirname,
-      `../../storage/vector-cache/${digestFilename}.json`
+      `../../storage/vector-cache/${digestFilename}.json`,
     );
     if (!fs.existsSync(filepath)) return false;
 
@@ -45,12 +45,12 @@ async function deleteVectorCacheFile(digestFilename = null) {
 // document and can instead push directly to vector db.
 async function cachedVectorInformation(
   digestFilename = null,
-  checkOnly = false
+  checkOnly = false,
 ) {
   if (!digestFilename) return checkOnly ? false : { exists: false, chunks: [] };
   const file = path.resolve(
     __dirname,
-    `../../storage/vector-cache/${digestFilename}.json`
+    `../../storage/vector-cache/${digestFilename}.json`,
   );
   const exists = fs.existsSync(file);
 
@@ -58,7 +58,7 @@ async function cachedVectorInformation(
   if (!exists) return { exists, chunks: [] };
 
   console.log(
-    `Cached vectorized results of ${digestFilename} found! Using cached data to save on embed costs.`
+    `Cached vectorized results of ${digestFilename} found! Using cached data to save on embed costs.`,
   );
   const rawData = fs.readFileSync(file, "utf8");
   return { exists: true, chunks: JSON.parse(rawData) };

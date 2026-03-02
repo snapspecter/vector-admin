@@ -5,7 +5,7 @@ async function documentDeletedJob(
   workspace,
   document,
   connector,
-  user
+  user,
 ) {
   const taskName = `${connector.type}/deleteDocument`;
   const jobData = { organization, workspace, connector, document };
@@ -13,7 +13,7 @@ async function documentDeletedJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

@@ -55,7 +55,7 @@ const Organization = {
       if (!orgId) throw new Error("No workspace id provided for update");
 
       const validKeys = Object.keys(updates).filter((key) =>
-        this.writable.includes(key)
+        this.writable.includes(key),
       );
       const values = Object.values(updates);
       if (validKeys.length === 0 || validKeys.length !== values.length)
@@ -135,7 +135,7 @@ const Organization = {
     userId,
     clause = {},
     limit = null,
-    orderBy = null
+    orderBy = null,
   ) {
     try {
       const orgIds = (

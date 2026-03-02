@@ -65,7 +65,7 @@ function ragTestingEndpoints(app) {
                 id: "desc",
               },
             },
-          }
+          },
         );
         response.status(200).json({ ragTests: tests, message: null });
         return;
@@ -73,7 +73,7 @@ function ragTestingEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -109,7 +109,7 @@ function ragTestingEndpoints(app) {
             promptVector: true,
             workspace: true,
             organization: true,
-          }
+          },
         );
         const runs = await RagTest.getRuns(test.id, {}, 10, {
           createdAt: "desc",
@@ -120,7 +120,7 @@ function ragTestingEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -156,7 +156,7 @@ function ragTestingEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -181,7 +181,7 @@ function ragTestingEndpoints(app) {
 
         const test = await RagTest.get(
           { id: Number(testId) },
-          { id: true, enabled: true }
+          { id: true, enabled: true },
         );
         if (!test) {
           response.sendStatus(400).end();
@@ -197,7 +197,7 @@ function ragTestingEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -216,7 +216,7 @@ function ragTestingEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -243,7 +243,7 @@ function ragTestingEndpoints(app) {
 
         const test = await RagTest.get(
           { id: Number(testId) },
-          { id: true, enabled: true }
+          { id: true, enabled: true },
         );
         if (!test || !test.enabled) {
           response.status(200).json({
@@ -256,14 +256,14 @@ function ragTestingEndpoints(app) {
         const { job, error } = await createRagTestJobRun(
           organization,
           test.id,
-          user
+          user,
         );
         response.status(200).json({ job, error });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

@@ -62,7 +62,7 @@ async function createRagTest(user, request, response) {
       comparisons: embeddings,
     },
     organization.id,
-    workspace.id
+    workspace.id,
   );
   response.status(200).json({
     test: newRagTest,

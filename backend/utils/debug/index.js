@@ -57,7 +57,7 @@ function setupDebugger(app) {
         //   events: path.resolve(__dirname, "dbevents.js"),
         // },
       },
-    })
+    }),
   );
 
   saveDebug(username, password);

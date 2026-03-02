@@ -18,7 +18,7 @@ const WorkspaceDocument = {
     const cacheFilename = this.vectorFilename(document);
     return path.resolve(
       __dirname,
-      `../storage/vector-cache/${cacheFilename}.json`
+      `../storage/vector-cache/${cacheFilename}.json`,
     );
   },
 
@@ -89,7 +89,7 @@ const WorkspaceDocument = {
     clause = {},
     limit = null,
     offset = null,
-    withReferences = false
+    withReferences = false,
   ) {
     try {
       const documents = await prisma.workspace_documents.findMany({

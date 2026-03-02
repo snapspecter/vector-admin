@@ -31,7 +31,7 @@ function jobEndpoints(app) {
           existingJob.taskName,
           jobData,
           user.id,
-          existingJob.organization_id
+          existingJob.organization_id,
         );
 
         if (!!error) {
@@ -51,7 +51,7 @@ function jobEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -83,7 +83,7 @@ function jobEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

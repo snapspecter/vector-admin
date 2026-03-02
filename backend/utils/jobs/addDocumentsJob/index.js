@@ -5,7 +5,7 @@ async function addDocumentJob(
   organization,
   workspace,
   connector,
-  user
+  user,
 ) {
   const taskName = `${connector.type}/addDocument`;
   const jobData = { documents: metadata, organization, workspace, connector };
@@ -13,7 +13,7 @@ async function addDocumentJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
 

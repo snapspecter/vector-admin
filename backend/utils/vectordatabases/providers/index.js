@@ -28,7 +28,7 @@ function selectConnector(organizationConnector) {
 
   throw new Error(
     "Could not find supported connector for vector database.",
-    type
+    type,
   );
 }
 

@@ -33,7 +33,7 @@ function userEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -61,7 +61,7 @@ function userEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -87,7 +87,7 @@ function userEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -110,7 +110,7 @@ function userEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

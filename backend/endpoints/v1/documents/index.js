@@ -54,7 +54,7 @@ function documentEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -84,14 +84,14 @@ function documentEndpoints(app) {
           workspace,
           document,
           connector,
-          user
+          user,
         );
         response.sendStatus(200).end();
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -113,7 +113,7 @@ function documentEndpoints(app) {
         const fragments = await DocumentVectors.where(
           { document_id: Number(id) },
           pageSize,
-          offset
+          offset,
         );
 
         const totalFragments = await DocumentVectors.count({
@@ -124,7 +124,7 @@ function documentEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -175,14 +175,14 @@ function documentEndpoints(app) {
           workspace,
           connector,
           user,
-          newText
+          newText,
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -224,14 +224,14 @@ function documentEndpoints(app) {
           workspace,
           connector,
           user,
-          newMetadata
+          newMetadata,
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -269,14 +269,14 @@ function documentEndpoints(app) {
           workspace,
           organization,
           connector,
-          user
+          user,
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -316,7 +316,7 @@ function documentEndpoints(app) {
         console.log(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -370,14 +370,14 @@ function documentEndpoints(app) {
           workspace,
           document,
           connector,
-          user
+          user,
         );
         response.status(200).json({ success: true, error: null });
       } catch (e) {
         console.log(e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -407,14 +407,14 @@ function documentEndpoints(app) {
         const { fragments, error } = await documentEmbeddingSearch(
           document,
           method,
-          query
+          query,
         );
         response.status(200).json({ fragments, error });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

@@ -74,7 +74,7 @@ const Notification = {
     clause = {},
     limit = null,
     offset = null,
-    orderBy = null
+    orderBy = null,
   ) {
     try {
       const notifications = await prisma.organization_notifications.findMany({

@@ -164,7 +164,7 @@ class QDrant {
         }
       } else {
         console.error(
-          "Could not use OpenAI to embed document chunk! This document will not be recorded."
+          "Could not use OpenAI to embed document chunk! This document will not be recorded.",
         );
       }
 
@@ -186,7 +186,7 @@ class QDrant {
       await DocumentVectors.createMany(documentVectors);
       await storeVectorResult(
         cacheInfo,
-        WorkspaceDocument.vectorFilename(dbDocument)
+        WorkspaceDocument.vectorFilename(dbDocument),
       );
       return { success: true, message: null };
     } catch (e) {

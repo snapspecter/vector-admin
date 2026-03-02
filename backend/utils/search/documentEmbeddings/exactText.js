@@ -30,7 +30,7 @@ async function exactTextSearch(document, query) {
   const queryString = matchingVectorIds.map((vid) => vid);
   const fragments = await DocumentVectors.where(
     { vectorId: { in: queryString } },
-    100
+    100,
   );
   return { fragments, error: null };
 }

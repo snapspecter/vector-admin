@@ -46,7 +46,7 @@ function organizationEndpoints(app) {
 
         const { organization, message } = await Organization.create(
           orgName,
-          user.id
+          user.id,
         );
         if (!organization) {
           response.status(200).json({
@@ -61,7 +61,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -78,14 +78,14 @@ function organizationEndpoints(app) {
           user.id,
           {},
           null,
-          { createdAt: "asc" }
+          { createdAt: "asc" },
         );
         response.status(200).json({ organizations, error: null });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -104,7 +104,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -131,7 +131,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -156,14 +156,14 @@ function organizationEndpoints(app) {
 
         const updateResponse = await Organization.update(
           organization.id,
-          updates
+          updates,
         );
         response.status(200).json(updateResponse);
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -202,7 +202,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -241,7 +241,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -282,7 +282,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -319,14 +319,14 @@ function organizationEndpoints(app) {
 
         const result = await validateUpdatedDatabaseConnector(
           connector,
-          config
+          config,
         );
         response.status(200).json(result);
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -368,7 +368,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -398,14 +398,14 @@ function organizationEndpoints(app) {
         const { job, error } = await createSyncJob(
           organization,
           connector,
-          user
+          user,
         );
         response.status(200).json({ job, error });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -438,7 +438,7 @@ function organizationEndpoints(app) {
           page,
           pageSize,
           includeSlugs,
-          searchTerm
+          searchTerm,
         );
 
         const totalWorkspaces = workspacesResults.length;
@@ -448,7 +448,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -479,7 +479,7 @@ function organizationEndpoints(app) {
           organization.id,
           page,
           pageSize,
-          includeSlugs
+          includeSlugs,
         );
 
         const totalWorkspaces = await OrganizationWorkspace.count({
@@ -490,7 +490,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -516,7 +516,7 @@ function organizationEndpoints(app) {
         const jobs = await Queue.where(
           { organization_id: Number(organization.id) },
           null,
-          { createdAt: "desc" }
+          { createdAt: "desc" },
         );
         for (const job of jobs) {
           const { id, email, role } = await User.get({
@@ -529,7 +529,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -559,7 +559,7 @@ function organizationEndpoints(app) {
           { organization_id: Number(organization.id) },
           pageSize,
           (page - 1) * pageSize,
-          true
+          true,
         );
 
         const totalDocuments = await WorkspaceDocument.count({
@@ -570,7 +570,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -609,14 +609,14 @@ function organizationEndpoints(app) {
 
         const value = await WorkspaceDocument[methods[statistic]](
           "organization_id",
-          organization.id
+          organization.id,
         );
         response.status(200).json({ value });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -660,7 +660,7 @@ function organizationEndpoints(app) {
         const existsInVectorDB = await vectorDb.namespace(namespace);
         const existingInVdbms = await OrganizationWorkspace.bySlugAndOrg(
           namespace,
-          organization.id
+          organization.id,
         );
         const exists = existsInVectorDB && !existingInVdbms;
         response
@@ -670,7 +670,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -709,7 +709,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.status(500).json({ success: false, error: e.message });
       }
-    }
+    },
   );
 
   app.get(
@@ -741,7 +741,7 @@ function organizationEndpoints(app) {
           },
           10,
           null,
-          { createdAt: "desc" }
+          { createdAt: "desc" },
         );
         const recentNotifications = await Notification.where(
           {
@@ -756,7 +756,7 @@ function organizationEndpoints(app) {
           },
           10,
           null,
-          { createdAt: "desc" }
+          { createdAt: "desc" },
         );
 
         const notifications = [...unseenNotifications, ...recentNotifications];
@@ -765,7 +765,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.status(500).json({ notifications: [], error: e.message });
       }
-    }
+    },
   );
 
   app.post(
@@ -795,7 +795,7 @@ function organizationEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

@@ -12,7 +12,7 @@ const OrganizationWorkspace = {
   safeCreate: async function (
     workspaceName = "",
     organizationId = 0,
-    dbConnectorRecord
+    dbConnectorRecord,
   ) {
     try {
       if (!workspaceName)
@@ -56,7 +56,7 @@ const OrganizationWorkspace = {
   create: async function (
     workspaceName = "",
     organizationId = 0,
-    presetFName = null
+    presetFName = null,
   ) {
     try {
       if (!workspaceName)
@@ -109,7 +109,7 @@ const OrganizationWorkspace = {
     page = 1,
     pageSize = 10,
     includeSlugs = [],
-    searchTerm = ""
+    searchTerm = "",
   ) {
     try {
       const offset = (page - 1) * pageSize;
@@ -156,7 +156,7 @@ const OrganizationWorkspace = {
     clause = {},
     limit = null,
     offset = null,
-    orderBy = null
+    orderBy = null,
   ) {
     try {
       const workspaces = await prisma.organization_workspaces.findMany({
@@ -178,7 +178,7 @@ const OrganizationWorkspace = {
     organization_id = 0,
     searchTerm = "",
     limit = 1,
-    offset = 0
+    offset = 0,
   ) {
     return await prisma.$queryRaw`SELECT * FROM organization_workspaces WHERE organization_id = ${organization_id} AND name LIKE ${
       "%" + searchTerm + "%"

@@ -68,7 +68,7 @@ const User = {
 
       for (const membership of memberships) {
         const org = organizations.find(
-          (org) => org.id === membership.organization_id
+          (org) => org.id === membership.organization_id,
         );
         user.memberships.push({ ...org, organization_id: org.id });
       }

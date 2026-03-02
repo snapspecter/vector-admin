@@ -3,7 +3,7 @@ const { Queue } = require("../../../models/queue");
 async function organizationMigrationJob(
   organization,
   destinationOrganization,
-  user
+  user,
 ) {
   const taskName = `organization/migrate`;
   const jobData = { organization, destinationOrganization };
@@ -11,7 +11,7 @@ async function organizationMigrationJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

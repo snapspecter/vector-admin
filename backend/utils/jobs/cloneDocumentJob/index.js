@@ -6,7 +6,7 @@ async function cloneDocumentJob(
   workspace,
   document,
   connector,
-  user
+  user,
 ) {
   const taskName = `${connector.type}/cloneDocument`;
   const jobData = { organization, workspace, document, connector };
@@ -23,7 +23,7 @@ async function cloneDocumentJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

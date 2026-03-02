@@ -19,18 +19,18 @@ app.use(cors({ origin: true }));
 app.use(
   bodyParser.text({
     limit: "10GB",
-  })
+  }),
 );
 app.use(
   bodyParser.json({
     limit: "10GB",
-  })
+  }),
 );
 app.use(
   bodyParser.urlencoded({
     limit: "10GB",
     extended: true,
-  })
+  }),
 );
 
 app.use("/api", apiRouter);
@@ -40,7 +40,7 @@ v1Endpoints(apiRouter);
 
 if (process.env.NODE_ENV !== "development") {
   app.use(
-    express.static(path.resolve(__dirname, "public"), { extensions: ["js"] })
+    express.static(path.resolve(__dirname, "public"), { extensions: ["js"] }),
   );
 
   app.use("/", function (_, response) {
@@ -62,7 +62,7 @@ app
     await systemInit();
     setupDebugger(apiRouter);
     console.log(
-      `Backend server listening on port ${process.env.SERVER_PORT || 3001}`
+      `Backend server listening on port ${process.env.SERVER_PORT || 3001}`,
     );
   })
   .on("error", function (err) {

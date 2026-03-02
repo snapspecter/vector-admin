@@ -87,7 +87,7 @@ function workspaceEndpoints(app) {
           await OrganizationWorkspace.safeCreate(
             workspaceName,
             organization.id,
-            connector
+            connector,
           );
         await newWorkspaceJob(organization, workspace, connector, user);
         response.status(200).json({ workspace, error });
@@ -95,7 +95,7 @@ function workspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -141,7 +141,7 @@ function workspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -172,7 +172,7 @@ function workspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.delete(
@@ -218,14 +218,14 @@ function workspaceEndpoints(app) {
           workspace,
           connector,
           documents,
-          user
+          user,
         );
         response.sendStatus(200).end();
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -247,7 +247,7 @@ function workspaceEndpoints(app) {
         });
         const workspace = await OrganizationWorkspace.bySlugAndOrg(
           wsSlug,
-          organization.id
+          organization.id,
         );
         if (!organization || !workspace) {
           response
@@ -263,7 +263,7 @@ function workspaceEndpoints(app) {
           },
           pageSize,
           (page - 1) * pageSize,
-          true
+          true,
         );
         const totalDocuments = await WorkspaceDocument.count({
           organization_id: Number(organization.id),
@@ -274,7 +274,7 @@ function workspaceEndpoints(app) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -292,7 +292,7 @@ function workspaceEndpoints(app) {
         const organization = await Organization.getWithOwner(user.id, { slug });
         const workspace = await OrganizationWorkspace.bySlugAndOrg(
           workspaceSlug,
-          organization.id
+          organization.id,
         );
         if (!organization || !workspace) {
           response
@@ -317,14 +317,14 @@ function workspaceEndpoints(app) {
 
         const value = await WorkspaceDocument[methods[statistic]](
           "workspace_id",
-          workspace.id
+          workspace.id,
         );
         response.status(200).json({ value });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.post(
@@ -358,7 +358,7 @@ function workspaceEndpoints(app) {
         const organization = await Organization.get({ slug });
         const workspace = await OrganizationWorkspace.bySlugAndOrg(
           workspaceSlug,
-          organization.id
+          organization.id,
         );
         const connector = await OrganizationConnection.get({
           organization_id: Number(organization.id),
@@ -368,7 +368,7 @@ function workspaceEndpoints(app) {
           organization,
           workspace,
           connector,
-          user
+          user,
         );
       } catch (e) {
         console.error(e.message);
@@ -377,7 +377,7 @@ function workspaceEndpoints(app) {
       }
 
       response.status(200).json({ success: true, error: null });
-    }
+    },
   );
 
   app.post(
@@ -392,7 +392,7 @@ function workspaceEndpoints(app) {
         const organization = await Organization.get({ slug });
         const workspace = await OrganizationWorkspace.bySlugAndOrg(
           workspaceSlug,
-          organization.id
+          organization.id,
         );
         const connector = await OrganizationConnection.get({
           organization_id: Number(organization.id),
@@ -416,7 +416,7 @@ function workspaceEndpoints(app) {
           workspace,
           connector,
           newWorkspaceName,
-          user
+          user,
         );
       } catch (e) {
         console.error(e.message);
@@ -425,7 +425,7 @@ function workspaceEndpoints(app) {
       }
 
       response.status(200).json({ success: true, error: null });
-    }
+    },
   );
 
   app.get(
@@ -446,7 +446,7 @@ function workspaceEndpoints(app) {
         const organization = await Organization.getWithOwner(user.id, { slug });
         const workspace = await OrganizationWorkspace.bySlugAndOrg(
           workspaceSlug,
-          organization.id
+          organization.id,
         );
         if (!organization || !connector || !workspace) {
           response.status(200).json({
@@ -460,14 +460,14 @@ function workspaceEndpoints(app) {
           organization,
           workspace,
           connector,
-          user
+          user,
         );
         response.status(200).json({ job, error });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 
   app.get(
@@ -497,14 +497,14 @@ function workspaceEndpoints(app) {
         const { documents, error } = await workspaceDocumentSearch(
           workspace,
           method,
-          query
+          query,
         );
         response.status(200).json({ documents, error });
       } catch (e) {
         console.log(e.message, e);
         response.sendStatus(500).end();
       }
-    }
+    },
   );
 }
 

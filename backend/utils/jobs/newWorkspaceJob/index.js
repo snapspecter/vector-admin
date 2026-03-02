@@ -17,7 +17,7 @@ async function newWorkspaceJob(organization, workspace, connector, user) {
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

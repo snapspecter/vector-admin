@@ -28,7 +28,7 @@ async function validateNewDatabaseConnector(organization, config) {
   const connector = await OrganizationConnection.create(
     organization.id,
     type,
-    settings
+    settings,
   );
   return { connector, error: null };
 }
@@ -66,18 +66,15 @@ async function validateChroma({
 }
 
 async function validatePinecone({ environment, index, apiKey }) {
-  const { PineconeClient } = require("@pinecone-database/pinecone");
+  const { Pinecone } = require("@pinecone-database/pinecone");
   try {
-    const client = new PineconeClient();
-    await client.init({
+    const client = new Pinecone({
       apiKey,
-      environment,
     });
-    const { status } = await client.describeIndex({
-      indexName: index,
-    });
+    const model = await client.describeIndex(index);
 
-    if (!status.ready) throw new Error("Pinecone::Index not ready or found.");
+    if (model.status.state !== "Ready")
+      throw new Error("Pinecone::Index not ready or found.");
     return { valid: true, message: null };
   } catch (e) {
     return { valid: false, message: e.message };

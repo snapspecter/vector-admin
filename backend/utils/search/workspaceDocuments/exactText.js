@@ -31,7 +31,7 @@ async function exactTextSearch(workspace, query) {
     promises.push(
       new Promise(async (resolve) => {
         resolve(await findTextInDoc(wsDoc, query));
-      })
+      }),
     );
   }
 

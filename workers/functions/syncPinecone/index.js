@@ -123,7 +123,6 @@ async function paginateAndStore(
   const { pineconeIndex, host } = await pineconeClient.connect();
   const PAGE_SIZE = 1_000;
   var syncing = true;
-  const files = {};
 
   while (syncing) {
     const {
@@ -144,11 +143,9 @@ async function paginateAndStore(
       continue;
     }
 
-    // Since Pinecone does not support pagination we need to now go an update all the discovered ids
-    // with some unique key <runId> in its metadata so on subsequent runs the same vectors are not discovered
-    // again.
     await updateAllPineconeIds(pineconeIndex, collection.name, ids, runId);
 
+    const files = {};
     for (let i = 0; i < ids.length; i++) {
       const documentName =
         metadatas[i]?.title ||
@@ -185,16 +182,16 @@ async function paginateAndStore(
         files[documentName].currentLine + 1 + totalLines;
     }
 
-    // When on the free starter tier upserts can be delayed anywhere from 10 - 60 seconds.
-    // So we need to sleep for this entire loop to ensure the RunID was saved + indexed.
-    // Ref: https://docs.pinecone.io/docs/starter-environment#limitations
+    await createDocuments(files, workspace, organization);
+    await createDocumentVectors(files);
+
+    for (const fileKey of Object.keys(files)) {
+      await saveVectorCache(files[fileKey]);
+    }
+
     if (pineconeClient.isStarterTier()) {
       console.log(
-        `\x1b[34m[Sync Notice]\x1b[0m Pinecone Starter Tier detected - need to sleep ${pineconeClient.STARTER_TIER_UPSERT_DELAY}ms between upserts.`,
-        {
-          pineconeDocsLink:
-            'https://docs.pinecone.io/docs/starter-environment#limitations',
-        }
+        `\x1b[34m[Sync Notice]\x1b[0m Pinecone Starter Tier detected - need to sleep ${pineconeClient.STARTER_TIER_UPSERT_DELAY}ms between upserts.`
       );
       await new Promise((r) =>
         setTimeout(r, pineconeClient.STARTER_TIER_UPSERT_DELAY)
@@ -202,44 +199,26 @@ async function paginateAndStore(
     }
   }
 
-  console.log('Creating Workspace Documents & Document Vectors');
-  await createDocuments(files, workspace, organization);
-  await createDocumentVectors(files);
-
-  for (const fileKey of Object.keys(files)) {
-    console.log('Creating vector cache for ', fileKey);
-    await saveVectorCache(files[fileKey]);
-  }
-
   return;
 }
 
-// Here we take a RunID - which is a unique value that we can append or upsert on each vector id.
-// Since Pinecone does not support a bulk update we queue up all the modified ids and then
-// send them "concurrently" at once so they are not stuck in sequential execution.
-// Maybe this should be a node worker for true multi-threading? Or Maybe Pinecone can add in this simple feature to the API.
-// Who knows.
 async function updateAllPineconeIds(pineconeIndex, namespace, ids = [], runId) {
   if (ids.length === 0) return;
 
   console.log(`Updating ${ids.length} Pinecone vectors with runID: ${runId}`);
-  const items = ids.map((id) => {
-    return new Promise((resolve) => {
-      const updateRequest = {
-        id,
-        namespace,
-        setMetadata: {
-          runId,
-        },
-      };
-      pineconeIndex
-        .update({ updateRequest })
-        .then(() => resolve(true))
-        .catch(() => resolve(true));
-    });
-  });
-
-  await Promise.all(items);
+  // Process in sequential batches of 100 to avoid creating 1000 concurrent Promises at once
+  const BATCH = 100;
+  for (let i = 0; i < ids.length; i += BATCH) {
+    const batch = ids.slice(i, i + BATCH);
+    await Promise.all(
+      batch.map((id) =>
+        pineconeIndex
+          .namespace(namespace)
+          .update({ id, metadata: { runId } })
+          .catch(() => null)
+      )
+    );
+  }
   return true;
 }
 

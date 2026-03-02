@@ -28,7 +28,7 @@ async function semanticSearch(workspace, query) {
   // Execute Similarity search for vector DB provider so we can find inferred documents.
   const searchResults = await vectorDb.similarityResponse(
     workspace.fname,
-    queryVector
+    queryVector,
   );
 
   // From similarity search we can find all document vector DB items to infer their associated

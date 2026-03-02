@@ -69,7 +69,7 @@ const RagTest = {
     clause = {},
     limit = null,
     orderBy = null,
-    select = null
+    select = null,
   ) {
     try {
       const tests = await prisma.organization_rag_tests.findMany({
@@ -156,7 +156,7 @@ const RagTest = {
     clause = {},
     limit = {},
     orderBy = {},
-    select = null
+    select = null,
   ) {
     try {
       const testRuns = await prisma.organization_rag_test_runs.findMany({

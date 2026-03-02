@@ -6,7 +6,7 @@ async function cloneWorkspaceJob(
   workspace,
   connector,
   newWorkspaceName,
-  user
+  user,
 ) {
   const taskName = `${connector.type}/cloneWorkspace`;
   const jobData = { organization, workspace, newWorkspaceName, connector };
@@ -23,7 +23,7 @@ async function cloneWorkspaceJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

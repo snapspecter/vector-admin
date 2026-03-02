@@ -20,7 +20,7 @@ async function createRagTestJobRun(organization, testId, user) {
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

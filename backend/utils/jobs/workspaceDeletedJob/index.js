@@ -5,11 +5,11 @@ async function workspaceDeletedJob(
   workspace,
   connector,
   documents,
-  user
+  user,
 ) {
   if (!connector) {
     console.log(
-      `No VectorDB connector found - no workspace/delete job will be queued.`
+      `No VectorDB connector found - no workspace/delete job will be queued.`,
     );
     return;
   }
@@ -20,7 +20,7 @@ async function workspaceDeletedJob(
     taskName,
     jobData,
     user.id,
-    organization.id
+    organization.id,
   );
   if (!!error) return { job, error };
   await Queue.sendJob({

@@ -27,22 +27,28 @@ class Pinecone {
   }
 
   async connect() {
-    const { PineconeClient } = require("@pinecone-database/pinecone");
+    const { Pinecone } = require("@pinecone-database/pinecone");
     const { type, settings } = this.config;
 
     if (type !== "pinecone")
       throw new Error("Pinecone::Invalid Not a Pinecone connector instance.");
 
-    const client = new PineconeClient();
-    await client.init({
+    const client = new Pinecone({
       apiKey: settings.apiKey,
-      environment: settings.environment,
     });
 
-    const pineconeIndex = client.Index(settings.index);
-    const {
-      status: { ready, host },
-    } = await this.describeIndexRaw();
+    const pineconeIndex = client.index(settings.index);
+    
+    let ready = false;
+    let host = null;
+    try {
+      const model = await client.describeIndex(settings.index);
+      ready = model.status.state === "Ready";
+      host = model.host;
+    } catch (e) {
+      console.error("Pinecone.describeIndex", e);
+    }
+
     if (!ready) throw new Error("Pinecone::Index not ready.");
 
     return { client, host, pineconeIndex };
@@ -50,70 +56,17 @@ class Pinecone {
 
   async indexDimensions() {
     const { pineconeIndex } = await this.connect();
-    const description = await pineconeIndex.describeIndexStats1();
+    const description = await pineconeIndex.describeIndexStats();
     return Number(description?.dimension || 0);
   }
 
-  async describeIndexRaw() {
-    const { settings } = this.config;
-    // 200 OK Example
-    //   {
-    //     "database": {
-    //         "name": string,
-    //         "metric": "cosine",
-    //         "dimension": 1536,
-    //         "replicas": 1,
-    //         "shards": 1,
-    //         "pods": 1
-    //     },
-    //     "status": {
-    //         "waiting": [],
-    //         "crashed": [],
-    //         "host": URL without protocol,
-    //         "port": 433,
-    //         "state": "Ready",
-    //         "ready": true
-    //     }
-    // }
-    return await fetch(
-      `https://controller.${settings.environment}.pinecone.io/databases/${settings.index}`,
-      {
-        method: "GET",
-        headers: {
-          "Api-Key": settings.apiKey,
-        },
-      }
-    )
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-
-        const error = {
-          code: res?.status,
-          message: res?.statusText,
-          url: res?.url,
-        };
-        throw error;
-      })
-      .catch((e) => {
-        console.error("Pinecone.describeIndexRaw", e);
-        return {
-          database: {},
-          status: {
-            ready: false,
-            host: null,
-          },
-        };
-      });
-  }
 
   async totalIndicies() {
     const { pineconeIndex } = await this.connect();
-    const { namespaces } = await pineconeIndex.describeIndexStats1();
-    const totalVectors = Object.values(namespaces).reduce(
-      (a, b) => a + (b?.vectorCount || 0),
-      0
+    const { namespaces } = await pineconeIndex.describeIndexStats();
+    const totalVectors = Object.values(namespaces || {}).reduce(
+      (a, b) => a + (b?.recordCount || 0),
+      0,
     );
     return { result: totalVectors, error: null };
   }
@@ -125,28 +78,30 @@ class Pinecone {
 
   async namespaces() {
     const { pineconeIndex } = await this.connect();
-    const { namespaces } = await pineconeIndex.describeIndexStats1();
-    const collections = Object.entries(namespaces).map(([name, values]) => {
-      return {
-        name,
-        count: values?.vectorCount || 0,
-      };
-    });
+    const { namespaces } = await pineconeIndex.describeIndexStats();
+    const collections = Object.entries(namespaces || {}).map(
+      ([name, values]) => {
+        return {
+          name,
+          count: values?.recordCount || 0,
+        };
+      },
+    );
 
     return collections;
   }
 
   async namespaceExists(index, namespace = null) {
     if (namespace === null) throw new Error("No namespace value provided.");
-    const { namespaces } = await index.describeIndexStats1();
-    return namespaces.hasOwnProperty(namespace);
+    const { namespaces } = await index.describeIndexStats();
+    return (namespaces || {}).hasOwnProperty(namespace);
   }
 
   async namespace(name = null) {
     if (name === null) throw new Error("No namespace value provided.");
     const { pineconeIndex } = await this.connect();
-    const { namespaces } = await pineconeIndex.describeIndexStats1();
-    const collection = namespaces.hasOwnProperty(name)
+    const { namespaces } = await pineconeIndex.describeIndexStats();
+    const collection = (namespaces || {}).hasOwnProperty(name)
       ? namespaces[name]
       : null;
     if (!collection) return null;
@@ -154,88 +109,34 @@ class Pinecone {
     return {
       name,
       ...collection,
-      count: collection?.vectorCount || 0,
+      count: collection?.recordCount || 0,
     };
   }
 
-  // 200OK
-  // {
-  //   "results": [],
-  //   "matches": [
-  //       {
-  //           "id": string,
-  //           "score": number,
-  //           "values": number[],
-  //           "metadata": object
-  //       },
-  //       ...
-  //     ],
-  //   "error": // only present if there was an error
-  // }
-  async _rawQuery(host, queryParams = {}) {
-    const { settings } = this.config;
-    return await fetch(`https://${host}/query`, {
-      method: "POST",
-      headers: {
-        "Api-Key": settings.apiKey,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(queryParams),
-    })
-      .then((res) => {
-        if (res.ok) {
-          return res.json();
-        }
-
-        const { vector, ...params } = queryParams;
-        const error = {
-          code: res?.status,
-          message: res?.statusText,
-          url: res?.url,
-          failedWith: JSON.stringify(params),
-        };
-        throw error;
-      })
-      .catch((e) => {
-        console.error("Pinecone.rawQuery", e);
-        return {
-          matches: [],
-          error: e,
-        };
-      });
-  }
-
-  // 3-try topK progressive backoff when 500 error. This would be because the associated text/metadata
-  // exceeds the max POST response size Pinecone is willing to send.
-  // default topK is 1000, which is the max Pinecone allows.
-  // So first we try the given topK, then half, lastly quarter.
-  // Nothing fancy like an expo-backoff because we need to make sure we don't rate-limit ourselves.
-  async rawQuery(host = "", queryParams = {}) {
-    var queryResponse;
+  // 3-try topK progressive backoff when error occurs.
+  // This helps when the associated text/metadata exceeds the max POST response size Pinecone is willing to send.
+  async rawQuery(pineconeIndex, namespace, queryParams = {}) {
     const initialPageSize = queryParams?.topK || 1_000;
-
-    queryResponse = await this._rawQuery(host, queryParams);
-    if (
-      !queryResponse.hasOwnProperty("error") ||
-      queryResponse?.error?.code !== 500
-    )
-      return queryResponse;
-
-    queryResponse = await this._rawQuery(host, {
-      ...queryParams,
-      topK: Math.floor(initialPageSize / 2),
-    });
-    if (
-      !queryResponse.hasOwnProperty("error") ||
-      queryResponse?.error?.code !== 500
-    )
-      return queryResponse;
-
-    queryResponse = await this._rawQuery(host, {
-      ...queryParams,
-      topK: Math.floor(initialPageSize / 4),
-    });
-    return queryResponse;
+    try {
+      return await pineconeIndex.namespace(namespace).query(queryParams);
+    } catch (e) {
+      try {
+        return await pineconeIndex.namespace(namespace).query({
+          ...queryParams,
+          topK: Math.floor(initialPageSize / 2),
+        });
+      } catch (e2) {
+        try {
+          return await pineconeIndex.namespace(namespace).query({
+            ...queryParams,
+            topK: Math.floor(initialPageSize / 4),
+          });
+        } catch (e3) {
+          console.error("Pinecone.rawQuery", e3.message);
+          return { matches: [], error: e3.message };
+        }
+      }
+    }
   }
 
   async rawGet(host, namespace, offset = 10, filterRunId = "") {
@@ -247,18 +148,23 @@ class Pinecone {
         documents: [],
         error: null,
       };
+
+      const { pineconeIndex } = await this.connect();
+      const dimension = await this.indexDimensions();
+      const dummyVector = Array.from({ length: dimension }, () => 0.0001);
+
       const queryRequest = {
-        namespace,
         topK: offset,
         includeValues: true,
         includeMetadata: true,
-        vector: Array.from({ length: 1536 }, () => 0),
-        filter: {
-          runId: { $ne: filterRunId },
-        },
+        vector: dummyVector,
       };
 
-      const queryResult = await this.rawQuery(host, queryRequest);
+      if (filterRunId) {
+        queryRequest.filter = { runId: { $ne: filterRunId } };
+      }
+
+      const queryResult = await this.rawQuery(pineconeIndex, namespace, queryRequest);
       if (!queryResult?.matches || queryResult.matches.length === 0) {
         return { ...data, error: queryResult?.error || null };
       }
@@ -272,7 +178,7 @@ class Pinecone {
       });
       return data;
     } catch (error) {
-      console.error("Pinecone::RawGet", error);
+      console.error("Pinecone::RawGet", error.message);
       return {
         ids: [],
         embeddings: [],
@@ -290,7 +196,7 @@ class Pinecone {
     documentData,
     embedderApiKey,
     dbDocument,
-    pineconeIndex
+    pineconeIndex,
   ) {
     try {
       const openai = new OpenAi(embedderApiKey);
@@ -345,7 +251,7 @@ class Pinecone {
         }
       } else {
         console.error(
-          "Could not use OpenAI to embed document chunk! This document will not be recorded."
+          "Could not use OpenAI to embed document chunk! This document will not be recorded.",
         );
       }
 
@@ -353,19 +259,14 @@ class Pinecone {
         const chunks = [];
         for (const chunk of toChunks(vectors, 500)) {
           chunks.push(chunk);
-          await pineconeIndex.upsert({
-            upsertRequest: {
-              vectors: [...chunk],
-              namespace,
-            },
-          });
+          await pineconeIndex.namespace(namespace).upsert(chunk);
         }
       }
 
       await DocumentVectors.createMany(documentVectors);
       await storeVectorResult(
         cacheInfo,
-        WorkspaceDocument.vectorFilename(dbDocument)
+        WorkspaceDocument.vectorFilename(dbDocument),
       );
       return { success: true, message: null };
     } catch (e) {
@@ -382,13 +283,10 @@ class Pinecone {
       sourceDocuments: [],
       scores: [],
     };
-    const response = await pineconeIndex.query({
-      queryRequest: {
-        namespace,
-        vector: queryVector,
-        topK,
-        includeMetadata: true,
-      },
+    const response = await pineconeIndex.namespace(namespace).query({
+      vector: queryVector,
+      topK,
+      includeMetadata: true,
     });
 
     response.matches.forEach((match) => {
@@ -403,13 +301,12 @@ class Pinecone {
 
   async getMetadata(namespace = "", vectorIds = []) {
     const { pineconeIndex } = await this.connect();
-    const { vectors } = await pineconeIndex.fetch({
-      ids: vectorIds,
-      namespace,
-    });
+    const { records } = await pineconeIndex
+      .namespace(namespace)
+      .fetch(vectorIds);
     const metadatas = [];
 
-    Object.values(vectors)?.forEach((vector, i) => {
+    Object.values(records || {})?.forEach((vector, i) => {
       metadatas.push({
         vectorId: vector.id,
         ...(vector?.metadata || {}),

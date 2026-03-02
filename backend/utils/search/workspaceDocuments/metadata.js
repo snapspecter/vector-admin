@@ -34,7 +34,7 @@ async function metadataSearch(workspace, query) {
     promises.push(
       new Promise(async (resolve) => {
         resolve(await findKeyValueInDoc(wsDoc, query));
-      })
+      }),
     );
   }
 

@@ -9,3 +9,7 @@ v-env
 yarn-error.log
 yarn.lock
 frontend/.env.development
+
+.agents/
+.sdd/
+.agent/workflows/
