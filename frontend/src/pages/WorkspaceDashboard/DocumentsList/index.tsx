@@ -287,13 +287,15 @@ export default function DocumentsList({
           )}
         </div>
       </div>
-      <div className="pb-4">
-        <DocumentListPagination
-          pageCount={Math.ceil(totalDocuments! / Workspace.documentPageSize)}
-          currentPage={currentPage}
-          gotoPage={updatePage}
-        />
-      </div>
+      {!searchMode && (
+        <div className="pb-4">
+          <DocumentListPagination
+            pageCount={Math.ceil(totalDocuments! / Workspace.documentPageSize)}
+            currentPage={currentPage}
+            gotoPage={updatePage}
+          />
+        </div>
+      )}
       {canUpload ? (
         <UploadDocumentModal workspace={workspace} />
       ) : (
